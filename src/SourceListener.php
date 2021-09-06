@@ -18,6 +18,8 @@ class SourceListener
     public static function initSource($source)
     {
         $source->objectType('JBImage', Type\JBImageType::config());
+        $source->objectType('JBGalleryImage', Type\JBGalleryImageType::config());
+        $source->objectType('JBGallery', Type\JBGalleryType::config());
 
         foreach (ApplicationHelper::getApplications() as $applications) {
             $source->queryType(Type\AppQueryType::config($source, $applications[0], $applications));
