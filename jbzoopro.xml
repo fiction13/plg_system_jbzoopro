@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.2" type="plugin" group="system" method="upgrade" >
+	<name>System - JBZoo Pro - YOOtheme Pro</name>
+	<author>Dmitriy Vasyukov</author>
+	<creationDate>August 2021</creationDate>
+	<copyright>Copyright (C) FictionLabs.ru</copyright>
+	<license>https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only</license>
+	<authorEmail>info@fictionlabs.ru</authorEmail>
+	<authorUrl>https://fictionlabs.ru</authorUrl>
+	<version>1.0.0</version>
+	<description>YOOtheme Pro plugin for JBZoo developed by FictionLabs</description>
+	<scriptfile>script.php</scriptfile>
+	<files>
+		<filename plugin="jbzoopro">jbzoopro.php</filename>
+		<filename>bootstrap.php</filename>
+		<folder>src</folder>
+	</files>
+</extension>
