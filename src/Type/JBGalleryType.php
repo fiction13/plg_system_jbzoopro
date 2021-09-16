@@ -21,7 +21,7 @@ class JBGalleryType
 
             'fields' => [
 
-                'value' => [
+                'file' => [
                     'type' => 'String',
                     'metadata' => [
                         'label' => 'Image',

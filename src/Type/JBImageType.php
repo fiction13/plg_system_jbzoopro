@@ -21,7 +21,7 @@ class JBImageType
 
             'fields' => [
 
-                'value' => [
+                'file' => [
                     'type' => 'String',
                     'metadata' => [
                         'label' => 'Image',

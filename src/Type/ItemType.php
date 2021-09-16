@@ -17,6 +17,8 @@ use YOOtheme\Builder\Source;
 use YOOtheme\Path;
 use YOOtheme\Str;
 use YOOtheme\View;
+use \Joomla\CMS\Factory;
+use \Joomla\CMS\Language\Language;
 
 class ItemType
 {
@@ -37,14 +39,14 @@ class ItemType
 
         foreach ($elements as $key => $element) {
 
-            // skip these elements
+            // only access elements
             if (!in_array($element->getElementType(), self::$access)) {
                 continue;
             }
 
-            $name = $element->config->name;
-            $lang = \JFactory::getLanguage()->getTag();
-            $field = \JLanguage::getInstance($lang)->transliterate($name);
+            $name  = $element->config->name;
+            $lang  = Factory::getLanguage()->getTag();
+            $field = Language::getInstance($lang)->transliterate($name);
 
             if (!$field) {
                 continue;
@@ -64,16 +66,21 @@ class ItemType
 
             $elementType = Str::camelCase($element->getElementType(), true);
 
+
+
             if (self::hasMultipleValue($element)) {
                 $configSingle = is_callable($callback = [__CLASS__, "config{$elementType}"])
                     ? $callback($element, $config)
                     : static::configElement($element, $config);
 
-                $configMultiple = is_callable($callback = [__CLASS__, "config{$elementType}"])
-                    ? $callback($element, $config, $source, true)
-                    : static::configElement($element, $config);
 
                 $configSingle = Event::emit('source.com_zoo.item.field|filter', $configSingle, $element, $source, $name);
+
+                $configMultiple = is_callable($callback = [__CLASS__, "config{$elementType}"])
+                    ? $callback($element, $config, true)
+                    : static::configElement($element, $config);
+
+                $configMultiple = Event::emit('source.com_zoo.item.field|filter', $configMultiple, $element, $source, $name);
 
                 if ($configSingle) {
                     $fields[$field] = $configSingle;
@@ -157,6 +164,26 @@ class ItemType
         return static::resolveElement($element);
     }
 
+    public static function resolveJBGalleryImage($element, $args)
+    {
+        $value      = $element->getValue();
+        $isMultiple = $args['isMultiple'];
+
+        if (!self::hasMultipleValue($element)) {
+            return $value;
+        }
+
+        $value = (array) $value;
+
+        return $isMultiple
+            ? array_map(function ($value) {
+                return is_scalar($value)
+                    ? compact('value')
+                    : $value;
+            }, $value)
+            : array_shift($value);
+    }
+
     public static function resolveJBImage($element, $args)
     {
         $value      = $element->getValue();
@@ -168,21 +195,33 @@ class ItemType
 
         $value = (array) $value;
 
-        if ($isMultiple) {
-            return array_map(function ($value) {
+        return $isMultiple
+            ? array_map(function ($value) {
                 return is_scalar($value)
                     ? compact('value')
                     : $value;
-            }, $value);
-        } else {
-            $val = array_shift($value); // first value
+            }, $value)
+            : array_shift($value);
+    }
 
-            if (empty($val['value'])) {
-                return array_shift($value);
-            }
+    public static function resolveJBGallery($element, $args)
+    {
+        $value      = $element->getValue();
+        $isMultiple = $args['isMultiple'];
 
-            return $val;
+        if (!self::hasMultipleValue($element)) {
+            return $value;
         }
+
+        $value = (array) $value;
+
+        return $isMultiple
+            ? array_map(function ($value) {
+                return is_scalar($value)
+                    ? compact('value')
+                    : $value;
+            }, $value)
+            : array_shift($value);
     }
 
     public static function resolveElement($element)
@@ -226,10 +265,10 @@ class ItemType
      */
     protected static function getElement($name, \Item $item)
     {   
-        $lang = \JFactory::getLanguage()->getTag();
+        $lang = Factory::getLanguage()->getTag();
 
         foreach ($item->getElements() as $element) {
-            if ($name === \JLanguage::getInstance($lang)->transliterate($element->config->name)) {
+            if ($name === Language::getInstance($lang)->transliterate($element->config->name)) {
                 return $element;
             }
         }
