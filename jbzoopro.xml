@@ -7,7 +7,7 @@
 	<license>https://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only</license>
 	<authorEmail>info@fictionlabs.ru</authorEmail>
 	<authorUrl>https://fictionlabs.ru</authorUrl>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<description>YOOtheme Pro plugin for JBZoo developed by FictionLabs</description>
 	<scriptfile>script.php</scriptfile>
 	<files>

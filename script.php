@@ -1,7 +1,7 @@
 <?php
 /*
  * @package   System - JBZoo YOOtheme Pro
- * @version   1.0
+ * @version   1.0.1
  * @author    Dmitriy Vasyukov - https://fictionlabs.ru
  * @copyright Copyright (c) 2021 Fictionlabs. All rights reserved.
  * @license   GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
