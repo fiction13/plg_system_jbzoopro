@@ -17,8 +17,7 @@ use YOOtheme\Builder\Source;
 use YOOtheme\Path;
 use YOOtheme\Str;
 use YOOtheme\View;
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\Language\Language;
+use YOOtheme\Builder\Joomla\Zoo\StrHelper;
 
 class ItemType
 {
@@ -44,9 +43,8 @@ class ItemType
                 continue;
             }
 
-            $name  = $element->config->name;
-            $lang  = Factory::getLanguage()->getTag();
-            $field = Language::getInstance($lang)->transliterate($name);
+            $name = $element->config->name;
+            $field = StrHelper::toFieldName($name);
 
             if (!$field) {
                 continue;
@@ -60,13 +58,14 @@ class ItemType
                     'label' => $name,
                 ],
                 'extensions' => [
-                    'call' => __CLASS__ . '::resolve',
+                    'call' => [
+                        'func' => __CLASS__ . '::resolve',
+                        'args' => ['element' => $element->identifier],
+                    ],
                 ],
             ];
 
             $elementType = Str::camelCase($element->getElementType(), true);
-
-
 
             if (self::hasMultipleValue($element)) {
                 $configSingle = is_callable($callback = [__CLASS__, "config{$elementType}"])
@@ -138,17 +137,17 @@ class ItemType
     }
 
     public static function resolve($item, $args, $ctx, $info)
-    {   
+    {
+        $element = $item->getElement($args['element']);
+
+        if (!$element) {
+            return;
+        }
+
         $isMultiple = strpos($info->fieldName, '_multiple') !== FALSE;
 
         if ($isMultiple) {
             $info->fieldName = str_replace('_multiple', '', $info->fieldName);
-        }
-
-        $element    = static::getElement($info->fieldName, $item);
-
-        if (!$element) {
-            return;
         }
 
         $elementType = Str::camelCase($element->getElementType(), true);
@@ -255,24 +254,6 @@ class ItemType
     {
         return $element instanceof \ElementRepeatable
             && $element->config->get('repeatable');
-    }
-
-    /**
-     * @param string $name
-     * @param \Item  $item
-     *
-     * @return \Element|null
-     */
-    protected static function getElement($name, \Item $item)
-    {   
-        $lang = Factory::getLanguage()->getTag();
-
-        foreach ($item->getElements() as $element) {
-            if ($name === Language::getInstance($lang)->transliterate($element->config->name)) {
-                return $element;
-            }
-        }
-
     }
 
     protected static function getCategoryType(\Element $element)
